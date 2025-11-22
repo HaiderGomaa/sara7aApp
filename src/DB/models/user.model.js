@@ -8,6 +8,10 @@ export const GenderProviders = {
   SYSTEM: "SYSTEM",
   GOOGLE: "GOOGLE",
 };
+export const ROLE = {
+  USER: "USER",
+  ADMIN: "ADMIN",
+};
 
 const userSchema = new mongoose.Schema(
   {
@@ -43,11 +47,25 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
+    cloudProfileImage: {
+      public_id: String,
+      secure_url:String
+    },
+    cloudCoverImages: [{ public_id: String,
+      secure_url:String}],
+      profileImage: {
+      type: String,
+    },
+    coverImages: [String],
     confirmEmail: Date,
     confirmemailOtp: String,
     forgetPsswordOtp:String,
     resetPassword:String,
     otpExpiresAt: Date,
+    freezedAt: Date,
+    freezedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    restoredAt: Date,
+    restoredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     gender: {
       type: String,
       enum: Object.values(GenderTypes),
@@ -58,6 +76,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(GenderProviders),
       default: GenderTypes.SYSTEM,
+      required: true,
+    },
+      role: {
+      type: String,
+      enum: Object.values(ROLE),
+      default: ROLE.USER,
       required: true,
     },
   },

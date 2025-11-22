@@ -1,5 +1,6 @@
 import joi from "joi";
 import { generalFields } from "../../MiddleWare/validation.Middleware.js";
+import { ROLE } from "../../DB/models/user.model.js";
 
 export const signSchema = {
   body: joi.object({
@@ -10,6 +11,7 @@ export const signSchema = {
     confirmePassword: generalFields.confirmePassword,
     gender: generalFields.gender.required(),
     phone: generalFields.phone.required(),
+    role:joi.string().valid("USER","ADMIN").default(ROLE.USER)
   }),
 };
 

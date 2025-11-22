@@ -61,4 +61,19 @@ export const generalFields={
             // If not valid, return a custom error message
             return helpers.message("Invalid ObjectId Format");
           }),
+      file:{
+        fieldname:Joi.string(),
+        originalname:Joi.string(),
+        encoding:Joi.string(),
+        mimetype:Joi.string(),
+        size:Joi.number().positive(),
+        filename:Joi.string(),
+        finalPath:Joi.string(),
+        path:Joi.string(),
+        destination:Joi.string()
+
+
+
+
+      }    
 }

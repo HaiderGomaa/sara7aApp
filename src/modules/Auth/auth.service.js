@@ -6,11 +6,12 @@ import { asymmetricEncrypt } from "../../Utilities/Encryption/encryption.utiliti
 import { compare, hash } from "../../Utilities/Hashing/hasing.utilities.js";
 import { events } from "../../Utilities/Events/event.utilities.js";
 import { customAlphabet } from "nanoid";
-import { generateToken } from "../../Utilities/tokens/token.utilities.js"; // ✅ تم تعديل السطر هنا فقط
+import { generateToken, getNewLoginCredientials } from "../../Utilities/tokens/token.utilities.js"; // ✅ تم تعديل السطر هنا فقط
 import { v4 as uuid } from "uuid";
 import Joi from "joi";
 import jwt from "jsonwebtoken";
    import OAuth2Client  from "google-auth-library";
+import { profileImage } from "../User/user.service.js";
 
 
 // ✅ Validation Schema
@@ -112,28 +113,12 @@ export const login = async (req, res, next) => {
     }
 
     // ✅ Generate tokens
-    const accessToken = generateToken({
-      payload: { id: checkUser._id, email: checkUser.email },
-      secretKey: process.env.TOKEN_ACCESS_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.TOKEN_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
-
-    const refreshToken = generateToken({
-      payload: { id: checkUser._id, email: checkUser.email },
-      secretKey: process.env.TOKEN_REFRESH_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.REFRESH_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
-
+  
+    const credientials=await getNewLoginCredientials(checkUser)
     return successResponse({
       res,
       statusCode: 200,
-      data: { accessToken, refreshToken },
+      data: { credientials },
       message: "User logged in successfully",
     });
   } catch (err) {
@@ -182,28 +167,13 @@ export const confirmEmail = async (req, res, next) => {
     });
 
     // ✅ Generate tokens after confirmation
-    const accessToken = generateToken({
-      payload: { id: checkUser._id, email: checkUser.email },
-      secretKey: process.env.TOKEN_ACCESS_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.TOKEN_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
+      const credientials=await getNewLoginCredientials(checkUser)
 
-    const refreshToken = generateToken({
-      payload: { id: checkUser._id, email: checkUser.email },
-      secretKey: process.env.TOKEN_REFRESH_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.REFRESH_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
 
     return successResponse({
       res,
       statusCode: 200,
-      data: { accessToken, refreshToken },
+      data: { credientials },
       message: "Email confirmed successfully",
     });
   } catch (err) {
@@ -237,19 +207,13 @@ export const refreshToken = async (req, res, next) => {
     }
 
     // ✅ Generate new access token
-    const newAccessToken = generateToken({
-      payload: { id: checkUser._id, email: checkUser.email },
-      secretKey: process.env.TOKEN_ACCESS_SECRET,
-      options: {
-        expiresIn: parseInt(process.env.TOKEN_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
+    const credientials=await getNewLoginCredientials(checkUser)
+
 
     return successResponse({
       res,
       statusCode: 200,
-      data: { accessToken: newAccessToken },
+      data: { credientials},
       message: "Access token refreshed successfully",
     });
   } catch (err) {
@@ -349,28 +313,13 @@ export const loginWithGoogle = async (req, res, next) => {
     if(user.providers===GenderProviders.GOOGLE)
     {
  // ✅ Generate tokens
-    const accessToken = generateToken({
-      payload: { id: user._id, email: user.email },
-      secretKey: process.env.TOKEN_ACCESS_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.TOKEN_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
+    const credientials=await getNewLoginCredientials(checkUser)
 
-    const refreshToken = generateToken({
-      payload: { id: user._id, email: user.email },
-      secretKey: process.env.TOKEN_REFRESH_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.REFRESH_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
 
     return successResponse({
       res,
       statusCode: 200,
-      data: { accessToken, refreshToken },
+      data: { credientials },
       message: "User login successfully",
     });
     }
@@ -383,32 +332,20 @@ export const loginWithGoogle = async (req, res, next) => {
           firstName: given_name,
           lastName: family_name,
           email,
+          profileImage:picture,
           confirmEmail: Date.now,
           providers:GenderProviders.GOOGLE
         }],
       });
   }
-       const accessToken = generateToken({
-      payload: { id: user._id, email: user.email },
-      secretKey: process.env.TOKEN_ACCESS_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.TOKEN_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
+       
 
-    const refreshToken = generateToken({
-      payload: { id: user._id, email: user.email },
-      secretKey: process.env.TOKEN_REFRESH_SECRETE,
-      options: {
-        expiresIn: parseInt(process.env.REFRESH_ACCESS_EXPIRS_IN),
-        jwtid: uuid(),
-      },
-    });
+      const credientials=await getNewLoginCredientials(checkUser)
+
     return successResponse({
       res,
       statusCode: 200,
-      data: { accessToken, refreshToken },
+      data: { credientials },
       message: "login successfully",
     });
   } catch (err) {

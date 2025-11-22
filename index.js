@@ -1,7 +1,7 @@
 import express from "express";
 import bootstrap from "./src/app.controller.js";
 import dotenv from "dotenv";
-
+import chalk from "chalk";
 dotenv.config();
 
 const app = express();
@@ -16,5 +16,5 @@ await bootstrap(app, express);
 
 // ✅ تشغيل السيرفر
 app.listen(port, () => {
-  console.log(`✅ Server is running at http://localhost:${port}`);
+  console.log(chalk.bgGreen(chalk.black(`✅ Server is running at http://localhost:${port}`)));
 });

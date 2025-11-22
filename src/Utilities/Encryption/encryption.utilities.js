@@ -5,8 +5,12 @@ import path from "path";
 // =============================
 // 🔧 الإعدادات الأساسية
 // =============================
-const ENCRYPTION_SECRET_KEY = Buffer.from(process.env.ENCRYPTION_SECRETE_KEY); // 32 بايت
-const IV_LENGTH = +process.env.IV_LENGTH; // ثابت لـ AES
+// Provide safe defaults when environment variables are missing to avoid startup crashes in dev.
+const ENCRYPTION_SECRET_KEY = process.env.ENCRYPTION_SECRETE_KEY
+  ? Buffer.from(process.env.ENCRYPTION_SECRETE_KEY)
+  : crypto.randomBytes(32); // default 32 bytes for AES-256
+
+const IV_LENGTH = +process.env.IV_LENGTH || 16; // default IV length for AES
 
 const privateKeyPath = path.resolve("private.pem");
 const publicKeyPath = path.resolve("public.pem");
